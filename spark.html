@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0052)file:///C:/users/admini~1/appdata/local/temp/23.html -->
+<!-- saved from url=(0052)file:///C:/users/admini~1/appdata/local/temp/19.html -->
 <html><head>
 <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
@@ -1021,217 +1021,159 @@ body .markdown-body
     page-break-after: avoid;
   }
 }
-</style><title>docker</title></head>
+</style><title>spark</title></head>
 <header>
   <iframe src="header.html" height="100%" width="100%" frameBorder=0 marginwidth=0 marginheight=0 scrolling="no" ALLOWTRANSPARENCY="true"></iframe>
 </header>
-<body><article class="markdown-body"><h1 id="docker"><a name="user-content-docker" href="file:///C:/users/admini~1/appdata/local/temp/23.html#docker" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>docker是什么?</h1>
-<blockquote>
-<p>轻量级内核虚拟化方案, 为什么这么说?<br>
-  剖析生产环境案例?</p>
-</blockquote>
-<h1 id="-"><a name="user-content--" href="file:///C:/users/admini~1/appdata/local/temp/23.html#-" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>虚拟什么?          -&gt;         对应硬件技术</h1>
-<table>
-<tbody><tr>
-<td> cpu(模拟, 虚拟(完全,半虚拟)) </td><td> VT-x </td>
-</tr>
-<tr>
-<td> memory(进程, 内核, cpu cache) </td><td> EPT </td>
-</tr>
-<tr>
-<td> io(存储, 网络, 显示, 键盘) </td><td> IOMMU </td>
-</tr>
-</tbody></table>
+<body>
+<article class="markdown-body"><h1 id="_1"><a name="user-content-_1" href="file:///C:/users/admini~1/appdata/local/temp/19.html#_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>简介:</h1>
+<pre><code>spark是一个内存计算框架 , 解决了mapreduce在迭代与交互方面的不足
+迭代: 多轮算法计算形式,pagerank,逻辑回归等
+交互: 实时数据,数据仓库查询等
+</code></pre>
+<h1 id="spark"><a name="user-content-spark" href="file:///C:/users/admini~1/appdata/local/temp/19.html#spark" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>spark重要概念:</h1>
+<pre><code>RDD: 
+    弹性分布式数据集, 弹性(数据多节点分片)分布式(集群节点)数据集(默认加载至内存)
+操作:
+    转换(transformation) rdd-&gt;newrdd
+    # 注意此类操作不会提交作业
+    map(func) 形成新的RDD集
+    filter(func) 过滤结果成为新的RDD集
+    flatmap(func) 映射为多于0的输出元素
+    groupbykey(key) 以Key为组的数据集
+    reducebykey(func) 以Key为组的数据集在经过func的处理
+    join(newrdd) 连接两个数据集 k,v k,w =&gt; k,(v,w)
+    sortbykey(desc) 排序数据集
+动作(action) 结果处理
+    # 注意此类操作将提交作业
+    reduce(func) func函数输入两个返回一个结果 
+    collect 返回操作后的数据元素
+    count 元素个数统计
+    countByKey 按Key统计每组的数目
+    saveastextfile 以文件形式保存计算结果集
+    saveassequencefile 以序列文件保存计算结果集
+操作分类:
+value:
+    1-&gt;1:
+        map, flatmap, mappartitions, glom
+    n-&gt;1:
+        union类型一致合并, cartesian分区笛卡尔积
+    n-&gt;n:
+        groupby
+    n属于m:
+        filter, distinct, subtract, sample, takesample
+    cache:
+        cache仅内存, persist可决定缓存位置
+key-value:
+    1-&gt;1:
+        mapValues
+    union:
+        combineByKey, reduceByKey, partitionBy分区策略, cogroup协同划分
+    join:
+        join(cogroup,flatMapValues), leftOutJoin, rightOutJoin
+action:
+    无输出:
+        foreach
+    HDFS:
+        saveAsTextFile, saveAsObjectFile
+    Scala:
+        collect, collectAsMap, reduceByKeyLocally, count, lookup, top(top,take,takeOrdered,first), reduce, fold, aggregate
+    DataType:
+</code></pre>
+<h1 id="spark_1"><a name="user-content-spark_1" href="file:///C:/users/admini~1/appdata/local/temp/19.html#spark_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>spark编程概念:</h1>
+<pre><code>共享变量: 
+    广播变量(boarkcast不可修改) .value
+    累加器(accumulator可累加)  .value
+初始化: 
+    构建SparkContext(集群地址,作业名称,sparkhome,作业依赖项)
+RDD类型: 
+    并行集合与hadoop数据集
+        并行集合: scala集合,可分片slice(parallelize)
+        hadoop集合: 文本,序列(K,V),inputformat
+        (之后均可做map/reduce操作)
+Cache: 
+    RDD转换后可缓存persist,cache,可容错
+    cache级别: 仅内存,内存磁盘,内存序列化kryo,内存磁盘序列化,仅磁盘,
+</code></pre>
+<h1 id="spark_2"><a name="user-content-spark_2" href="file:///C:/users/admini~1/appdata/local/temp/19.html#spark_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>spark基本架构:</h1>
+<pre><code>应用程序间环境隔离 , 资源管理(YARN , Mesos) + 应用程序管理 . 程序运行过程中对RDD分片的优化(窄fusion , 宽全局barrier)
+spark运行流程:
+  提交应用 -&gt; DAG依赖流程化 -&gt; 执行DAG至完成 -&gt; 销毁运行环境
+提交应用:
+  构建运行环境: 粗(一次YARN,Mesos).细(多次Mesos)
+  启动RDD管理器 BlockManager
+DAG依赖流程化:
+  分解宽窄依赖: 归组
+    fusion优化,不需要物化
+执行DAG至完成:
+  数据本地化: 基架感知
+  推测执行: 另起资源比较
+销毁运行环境:
+    回收资源
+</code></pre>
+<h1 id="spark-on-yarn"><a name="user-content-spark-on-yarn" href="file:///C:/users/admini~1/appdata/local/temp/19.html#spark-on-yarn" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>spark on YARN:</h1>
+<pre><code>客户端 提交任务 至 ApplicationMaster 申请资源 向 Nodemanager
+SAM 内部有 ClusterScheduler(cpu核数) 有了资源 启动 StandaloneExecutorBackend(container大小) 注册 akka 等待任务 之后执行 完毕回收资源
+</code></pre>
+<h1 id="mesos"><a name="user-content-mesos" href="file:///C:/users/admini~1/appdata/local/temp/19.html#mesos" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Mesos介绍:</h1>
+<pre><code>集群资源管理器 twitter,douban
+客户端scheduler -&gt; MesosSchedulerDriver -&gt; MesosMaster(zk) -&gt; MesosSlave(Executor)
+master: 核心, 资源接入,分配Allocator,其他框架的管理
+salve: 接收命令,报告状态(任务,资源)
+framework scheduler: MesosSchedulerDriver第三方实现接入mesos, 双层调度(资源给框架,框架自定任务)  —&gt;  类似hadoop jobtrack
+framework executor: MesosExecutorDriver第三方执行实现  —&gt; 类似hadoop tasktrack
 
-<h1 id="intel"><a name="user-content-intel" href="file:///C:/users/admini~1/appdata/local/temp/23.html#intel" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Intel硬件辅助的虚拟化：</h1>
-<blockquote>
-<p>CPU: vt-x, EPT, tagged-TLB<br>
-  IO/CPU: vt-d, IOV, VMDq</p>
-<p>第一类：跟处理器相关：vt-x<br>
-  第二类：跟芯片相关：vt-d<br>
-  第三类：跟IO相关：VMDq和SR-IOV</p>
-</blockquote>
-<h1 id="_1"><a name="user-content-_1" href="file:///C:/users/admini~1/appdata/local/temp/23.html#_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>虚拟化技术的分类?</h1>
-<pre><code>模拟：著名的模拟器，PearPC, Bochs, QEMU
-完全虚拟化：也称为native virtulization
-    两种加速方式：
-        BT(binary translation)
-        HVM(hardware help virtualization)
-    VMware Workstation, VMware Server, KVM, Xen(HVM)
-半虚拟化：para-virtualization
-    xen, uml(user-mode linux)
-OS级别的虚拟化:
-    OpenVZ, lxc(cgroups)
-    Solaris (Containers)
-    FreeBSD (Jail)
-    Docker(cgroups -&gt; libcontainers)
-库虚拟化：
-    wine
-应用程序虚拟化：
-    jvm
+第三方框架注册流程:
+    第三方实现MesosSchedulerDriver,启动SchedulerProcess服务,MasterDetector对象(探测master通知schedulerprocess),sp会向master发送注册消息,sp确认,framework确认
+
+mesos资源分配: 主资源公平调度算法,多维度资源,授权接入框架
+    设计: 资源拒绝(slave), 资源过滤(salve), 资源回收(master)
+
+mesos容错设计:
+    master: zk
+    salve: 心跳,快照运行目录
+
+mesos vs YARN:
+    设计目标一致:　通用集群资源管理方案
+    容错一致: zk,多主
+    在线升级: YARN的salve不支持
+    调度模型一致: 双层
+    调度算法: YARN除了DRF还支持容量与失败
+    资源隔离一致: cgroups
+    支持框架一致: mapreduce,strorm,spark等
+    资源分配颗粒度: YARN不支持动态资源分配</code></pre>
+<h1 id="_2"><a name="user-content-_2" href="file:///C:/users/admini~1/appdata/local/temp/19.html#_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>网络库:</h1>
+<pre><code>rpc            serialization
+libprocess     protocal buffer
+avro           avro
+Thrift         idl
+socket         kryo
+
+libprocess设计: 消息(类型) -&gt; 消息队列 -&gt; 消息处理分发器(dispatcher) -&gt; 消息处理    高效,易用
 </code></pre>
-<p><img alt="图2" src="./docker_files/p2.jpg"><br>
-<img alt="图1" src="./docker_files/p1.jpg"></p>
-<h1 id="docker_1"><a name="user-content-docker_1" href="file:///C:/users/admini~1/appdata/local/temp/23.html#docker_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>docker所采用的技术?</h1>
-<blockquote>
-<p>内核名字空间(netns)  -&gt;  pid,net,ipc,mntuts,user<br>
-  容器格式(containers) -&gt; lxc -&gt; libcontainers<br>
-  控制组(cgroups)<br>
-  内核能力机制(capability)<br>
-  联合文件系统(ufs)</p>
-</blockquote>
-<h1 id="_2"><a name="user-content-_2" href="file:///C:/users/admini~1/appdata/local/temp/23.html#_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>优势是什么?</h1>
-<p><img alt="图3" src="./docker_files/p3.jpg"></p>
-<blockquote>
-<p>外加部署,环境迁移</p>
-</blockquote>
-<h1 id="_3"><a name="user-content-_3" href="file:///C:/users/admini~1/appdata/local/temp/23.html#_3" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>劣势是什么?</h1>
-<blockquote>
-<p>原生集群方案, 可拓展性<br>
-  大批量容器管理, 网络<br>
-  容器稳定性(*)</p>
-</blockquote>
-<h1 id="docker_2"><a name="user-content-docker_2" href="file:///C:/users/admini~1/appdata/local/temp/23.html#docker_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>docker的安装?</h1>
-<pre><code>要求内核在3.8以上的linux版本, 其他平台参见boot2docker
-ubuntu:
-    sudo apt-get update
-    sudo apt-get install docker.io
-centos6:
-    sudo yum install docker-io
-centos7:
-    sudo yum install docker
+<h1 id="spark_3"><a name="user-content-spark_3" href="file:///C:/users/admini~1/appdata/local/temp/19.html#spark_3" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>spark工作机制:</h1>
+<pre><code>应用运行提交:
+spark任务调度分配:
+spark io: 序列化(进程actor,NIO,netty,磁盘kyro)
+                    压缩(snappy,LZF)
+spark net:RPC, RMI, WEB Service, EJB
+                    AKKA
+spark 容错: 血统, checkpoint
 </code></pre>
-<h1 id="docker_3"><a name="user-content-docker_3" href="file:///C:/users/admini~1/appdata/local/temp/23.html#docker_3" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>docker三大基本概念?</h1>
-<blockquote>
-<p>镜像: 通过裁剪, 下载适于docker的物理文件, 操作系统文件<br>
-  容器: 物理文件运行起来的一个个实例, 内存中<br>
-  仓库: 方便进行镜像的迁移, 分享的地方</p>
-</blockquote>
-<h1 id="docker_4"><a name="user-content-docker_4" href="file:///C:/users/admini~1/appdata/local/temp/23.html#docker_4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>docker常用命令及演示?</h1>
-<pre><code>docker pull centos
-docker images
-docker run -i -t -p 22 centos /bin/bash
-docker run -d centos /bin/sshd
-docker ps -a
-docker rm 容器id
-    示例: docker rm $(docker ps -a -q)
-docker rmi 镜像id
-    示例: docker rmi $(docker ps -a -q)
-docker commit
-docker logs 容器id
-docker start 容器id / stop / restart
-docker attach 容器id
-docker login / logout
-docker import / load
-docker search
-docker save
-docker tag
-docker kill $(docker ps -q)
-docker inspect 镜像id
-</code></pre>
-<h1 id="docker_5"><a name="user-content-docker_5" href="file:///C:/users/admini~1/appdata/local/temp/23.html#docker_5" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>docker使用?</h1>
-<pre><code>容器创建仓库
-    1. docker pull registry
-    2. docker run -i -t -p 5000:5000 registry / docker run -d -p 5000:5000 registry
-    3. gunicorn –access-logfile - –error-logfile - -k gevent -b 0.0.0.0:5000 -w 4 –max-requests 100 docker_registry.wsgi:application
-    4. docker push ip地址:5000/镜像名  / 也可以直接从本地pull
-本地创建仓库:
-    1. yum install gcc libgcc swig openssl openssl-devel python-devel libevent-devel python-pip xz-devel
-    2. pip2.7 install docker-registry
-    3. sysctl service.registry start
-构建web服务
-    1. sudo docker run –name some-nginx -v /some/content:/usr/share/nginx/html:ro -d nginx</code></pre>
-<h1 id="dockerfile"><a name="user-content-dockerfile" href="file:///C:/users/admini~1/appdata/local/temp/23.html#dockerfile" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>dockerfile?</h1>
-<blockquote>
-<p><strong>FROM</strong><br>
-<strong>MAINTAINER</strong><br>
-<strong>RUN</strong><br>
-<strong>CMD</strong></p>
-<p>EXPOSE<br>
-    ENV<br>
-    ADD<br>
-    COPY<br>
-    ENTRYPOINT<br>
-    VOLUME<br>
-    USER<br>
-    WORKDIR<br>
-    ONBUILD</p>
-</blockquote>
-<h1 id="dockerfile_1"><a name="user-content-dockerfile_1" href="file:///C:/users/admini~1/appdata/local/temp/23.html#dockerfile_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>dockerfile的示例</h1>
-<h3 id="_4"><a name="user-content-_4" href="file:///C:/users/admini~1/appdata/local/temp/23.html#_4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>* 开胃菜</h3>
-<pre><code># dockerfile
-FROM centos
-MAINTAINER bingwang@cekasp.cn
-RUN yum -y update
-RUN yum -y install openssh-server
-RUN mkdir -p /var/run/sshd
-RUN mkdir -p /root/.ssh
-RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
-RUN ssh-keygen -t dsa -f /etc/ssh/ssh_host_ecdsa_key
-RUN /bin/echo ‘root:cekasp’ | chpasswd
-RUN /bin/sed -i ‘s/.*session.*required.*pam_loginuid.so.*/session optional pam_loginuid.so/g’ /etc/pam.d/sshd
-EXPOSE 22
-CMD /usr/sbin/sshd -D
-# shellcmd
-docker build -t sshd .
-docker run -d -p 10022:22 sshd /usr/sbin/sshd -D
-ssh localhost -p 10022</code></pre>
-<h3 id="_5"><a name="user-content-_5" href="file:///C:/users/admini~1/appdata/local/temp/23.html#_5" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>* 正餐</h3>
-<pre><code># shellcmd
-mkdir -p /var/lib/tomcat/webapps/
-cd /var/lib/tomcat/webapps/
-wget https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war
-# dockerfile
-FROM centos
-MAINTAINER bingwang@cekasp.cn
-ENV CATALINA_HOME /usr/share/tomcat
-ENV CATALINA_BASE /var/lib/tomcat
-ENV CATALINA_PID /var/run/tomcat.pid
-ENV CATALINA_SH /usr/share/tomcat/bin/catalina.sh
-ENV CATALINA_TMPDIR /tmp/tomcat-tmp
-RUN yum -y install tomcat jdk
-RUN mkdir -p $CATALINA_TMPDIR
-VOLUMN [ “/var/lib/tomcat/webapps/” ]
-EXPOSE 8080
-ENTRYPOINT [ “/usr/share/tomcat/bin/catalina.sh”, “start” ]
-# shellcmd
-docker build -t name/repo .
-docker run -d -p 8080:8080 –name simple name/repo 
-docker inspect -f “{{ .Volumns }}” sample</code></pre>
-<h3 id="_6"><a name="user-content-_6" href="file:///C:/users/admini~1/appdata/local/temp/23.html#_6" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>* 甜点</h3>
-<pre><code>FROM centos
-MAINTAINER bingwang@cekasp.cn
-RUN yum -y install wget
-VOLUMN [ “/var/lib/tomcat/webapps/” ]
-WORKDIR /var/lib/tomcat/webapps/
-ENTRYPOINT [ “wget” ]
-CMD [ “–help” ]
-docker build -t name/repo .
-# 重现编排tomcat
-docker run –name xxxx –volumes-from name/repo -d -P name/repo
-docker portal xxxx 8080</code></pre>
-<h3 id="_7"><a name="user-content-_7" href="file:///C:/users/admini~1/appdata/local/temp/23.html#_7" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>* 资料</h3>
-<ul>
-<li><a href="https://docs.docker.com/reference/builder/">dockerfile</a></li>
-</ul>
-<h1 id="docker_6"><a name="user-content-docker_6" href="file:///C:/users/admini~1/appdata/local/temp/23.html#docker_6" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>docker网络?</h1>
-<p><img alt="图4" src="./docker_files/p4.jpg"><br>
-* <a href="http://www.open-open.com/lib/view/open1404896485747.html">network</a></p>
-<h1 id="docker_7"><a name="user-content-docker_7" href="file:///C:/users/admini~1/appdata/local/temp/23.html#docker_7" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>docker存储?</h1>
-<ul>
-<li><a href="https://docs.docker.com/reference/builder/">volumes</a></li>
-</ul>
-<h2 id="webapp"><a name="user-content-webapp" href="file:///C:/users/admini~1/appdata/local/temp/23.html#webapp" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>在运行的容器中添加一个webapp数据卷</h2>
-<pre><code>docker run -i -t –name web -v /opt/webapp training/webapp python app.py</code></pre>
-<h2 id="_8"><a name="user-content-_8" href="file:///C:/users/admini~1/appdata/local/temp/23.html#_8" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>绑定宿主机的一个目录到容器的数据卷</h2>
-<pre><code>docker run -i -t –name web -v /data01/dbdata:/opt/webapp training/webapp python app.py
-# 只读方式挂载
-docker run -i -t –name web -v /data01/dbdata:/opt/webapp:ro training/webapp python app.py
-# 创建并挂载数据卷
-sudo docker run -d –volumes-from web –name db1 training/postgres</code></pre>
-<h1 id="docker_8"><a name="user-content-docker_8" href="file:///C:/users/admini~1/appdata/local/temp/23.html#docker_8" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>docker其他?</h1>
-<ul>
-<li><a href="http://www.fig.sh/">fig</a></li>
-<li><a href="http://kubernetes.io/">kubernets</a></li>
-<li><a href="https://consul.io/">consul</a></li>
-</ul></article></body></html>
+<h1 id="spark_4"><a name="user-content-spark_4" href="file:///C:/users/admini~1/appdata/local/temp/19.html#spark_4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>spark编程:</h1>
+<pre><code>下载源码包 , 安装maven , ./make-distribution.sh –skip-java-test构建本地模式
+安装sbt打包工具
+编写代码:
+    python: 
+        from pyspark import SparkContext
+    scala: 
+        import org.apache.spark.SparkContext
+        import org.apache.spark.SparkContext._
+        import org.apache.spark.SparkConf
+编写sbt依赖文件:
+    name := “Simple Project”
+    version := “1.0”
+    scalaVersion := “2.10”
+    libraryDependencies += “org.apache.spark” %% “spark-core” % “1.1.0”
+sbt打包: sbt package
+提交应用: /bin/spark-submit –class “SimpleApp” –master local test/target/scala-2.10/simple-project_2.10-1.0.jar</code></pre></article></body></html>
