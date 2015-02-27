@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)file:///C:/users/admini~1/appdata/local/temp/43.html -->
+<html><head>
+<link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <link rel="stylesheet" type="text/css" href="stylesheets/makedown.css" media="print">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8">
+
+<title>opsget</title></head>
+<header>
+  <iframe src="header.html" height="100%" width="100%" frameBorder=0 marginwidth=0 marginheight=0 scrolling="no" ALLOWTRANSPARENCY="true"></iframe>
+</header>
+<body><article class="markdown-body"><h1 id="linux-operation"><a name="user-content-linux-operation" href="file:///C:/users/admini~1/appdata/local/temp/43.html#linux-operation" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Linux Operation:</h1>
+<pre><code>PXE: 镜像,网络引导,web服务,ftp服务
+Cobbler: 更好PXE封装
+</code></pre>
+<h1 id="web"><a name="user-content-web" href="file:///C:/users/admini~1/appdata/local/temp/43.html#web" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Web服务器:</h1>
+<pre><code>Apache: 功能全面,通用性好
+Tomcat: jvm容器,相比与jetty来说更全面, ajp反代
+Nginx: 性能强劲, 静态内容分发, 反向代理, 日志缓存,代理缓存,fastcgi cache 常用模块ssl,gzip,proxy
+</code></pre>
+<h1 id="shell-python"><a name="user-content-shell-python" href="file:///C:/users/admini~1/appdata/local/temp/43.html#shell-python" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>脚本: Shell Python</h1>
+<h1 id="lb"><a name="user-content-lb" href="file:///C:/users/admini~1/appdata/local/temp/43.html#lb" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>集群LB:</h1>
+<pre><code>LVS: 内核四层调度, 多种调度算法rr,地址散列,链接调度, nat dr会单点,内网 arp,  (NLB)
+Haproxy: 7层性能调度, 有cookie, 双主高可用, 可自带健康检测
+</code></pre>
+<h1 id="ha"><a name="user-content-ha" href="file:///C:/users/admini~1/appdata/local/temp/43.html#ha" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>集群HA:</h1>
+<pre><code>Corosync: heartbeat(redhat系)
+KeepAlived: vrrp协议, 健康检测
+</code></pre>
+<h1 id="_1"><a name="user-content-_1" href="file:///C:/users/admini~1/appdata/local/temp/43.html#_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>存储方案:</h1>
+<pre><code>IPSAN(iSCSI): 安全, 节点发现, 跨域
+NFS:
+MogliseFS: 无单点故障, 恢复, 节约成本
+</code></pre>
+<h1 id="_2"><a name="user-content-_2" href="file:///C:/users/admini~1/appdata/local/temp/43.html#_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>虚拟化:</h1>
+<pre><code>XEN 共享存储实现实时迁移
+KVM virsh migrate共享存储实时迁移
+自动化Salt
+</code></pre>
+<h1 id="mysql"><a name="user-content-mysql" href="file:///C:/users/admini~1/appdata/local/temp/43.html#mysql" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Mysql:</h1>
+<pre><code>主从: 快照镜像检查不一致状态
+HA: MMM
+读写分离: amoeba xml中配置sql路由
+Backup方案: mysqldump, xtrabackup(冷热增量), 二进制文件
+</code></pre>
+<h1 id="_3"><a name="user-content-_3" href="file:///C:/users/admini~1/appdata/local/temp/43.html#_3" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>缓存机制:</h1>
+<pre><code>MemCached: 仅键值缓存
+Varnish: web加速器
+Redis: 多种类缓存,可持久化
+</code></pre>
+<h1 id="openstack-iaas"><a name="user-content-openstack-iaas" href="file:///C:/users/admini~1/appdata/local/temp/43.html#openstack-iaas" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>OpenStack Iaas原理及实现</h1>
+<h1 id="spark"><a name="user-content-spark" href="file:///C:/users/admini~1/appdata/local/temp/43.html#spark" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>Spark分布式部署及简单使用</h1>
+<h1 id="seesion"><a name="user-content-seesion" href="file:///C:/users/admini~1/appdata/local/temp/43.html#seesion" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>seesion同步策略:</h1>
+<pre><code>session绑定
+    源IP绑定：
+        nginx: ip_hash
+        haproxy: source
+        ipvs: sh
+    cookie绑定：
+        cookie
+session复制
+session服务器
+</code></pre></article></body></html>
