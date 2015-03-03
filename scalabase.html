@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)file:///C:/users/admini~1/appdata/local/temp/18.html -->
+<html><head>
+<link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+<link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+<link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+<link rel="stylesheet" type="text/css" href="stylesheets/makedown.css" media="print">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8">
+
+<style>
+
+body {
+  width: 60em;
+  border: 1px solid #ddd;
+  outline: 1300px solid #fff;
+  margin: 16px auto;
+}
+
+body .markdown-body
+{
+  padding: 30px;
+}
+
+</style>
+<title>scalabase</title></head>
+<header>
+  <iframe src="header.html" height="100%" width="100%" frameBorder=0 marginwidth=0 marginheight=0 scrolling="no" ALLOWTRANSPARENCY="true"></iframe>
+</header>
+<body>
+
+<article class="markdown-body"><h1 id="version-210"><a name="user-content-version-210" href="file:///C:/users/admini~1/appdata/local/temp/18.html#version-210" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>字符插值(version: 2.10)</h1>
+<pre><code>val a = 1
+println(s”${a + 1}”)</code></pre>
+<h1 id="_1"><a name="user-content-_1" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>字符格式化</h1>
+<pre><code>printf(“Now you have %.16f problems.”, Math.nextAfter(2.0, 3))</code></pre>
+<h1 id="_2"><a name="user-content-_2" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>有用操作</h1>
+<h2 id="_3"><a name="user-content-_3" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_3" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>数字</h2>
+<pre><code># to until by toList
+# abs max min
+</code></pre>
+<h2 id="_4"><a name="user-content-_4" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>字符</h2>
+<pre><code># reverse capitalize toInt
+</code></pre>
+<h2 id="_5"><a name="user-content-_5" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_5" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>集合</h2>
+<pre><code># filter map
+</code></pre>
+<h1 id="_6"><a name="user-content-_6" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_6" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>函数定义</h1>
+<pre><code># style 1
+def add(x: Int, y: Int): Int = {
+    x + y
+}
+println(add(3,4))
+# style 2
+def add(x: Int, y: Int) = {
+    x + y
+}
+println(add(3,4))
+# style 3
+def add(x: Int, y: Int) = x + y
+println(add(3,4))
+</code></pre>
+<h1 id="_7"><a name="user-content-_7" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_7" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>匿名函数</h1>
+<pre><code># style 1
+val add2 = (x:Int, y:Int) =&gt; x + y
+# style 2
+def proxymethod(f: Int =&gt; Int) = {
+    f(1)
+}
+val call = proxymethod(x =&gt; x + 1)
+</code></pre>
+<h1 id="_8"><a name="user-content-_8" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_8" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>多值返回/定义</h1>
+<pre><code>def swap(x:String, y:String) = (y, x)
+val (a, b) = swap(“x:String”, “y:String”)
+var x, y, z = 0
+var (x, y, z, c, python, java) = (1, 2, 3, true, false, “no!”)</code></pre>
+<h1 id="_9"><a name="user-content-_9" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_9" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>条件控制</h1>
+<pre><code># while for if 
+# (0 until 10).sum
+</code></pre>
+<h1 id="match"><a name="user-content-match" href="file:///C:/users/admini~1/appdata/local/temp/18.html#match" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>match</h1>
+<pre><code>val condition = false
+condition match {
+    case “1” =&gt; xxxx
+    case “2” =&gt; xxxx
+    case _ =&gt; xxxx
+}</code></pre>
+<h1 id="array"><a name="user-content-array" href="file:///C:/users/admini~1/appdata/local/temp/18.html#array" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>array</h1>
+<pre><code>val array1 = Array(1, 2, 3)
+val array2 = Array(“a”, 2, true)
+val concatenated = “prepend” +: (array1 ++ array2) :+ “append”
+val personArray = Array((“Alice”,1), (“Bob”,2), (“Carol”,3))
+# arr.diff(arr)
+# arr.find(_._1 == “x”).getOrElse(“a”,4)</code></pre>
+<h1 id="_10"><a name="user-content-_10" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_10" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>类型推演</h1>
+<pre><code>val x = 1
+val y = “1”</code></pre>
+<h1 id="_11"><a name="user-content-_11" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_11" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>泛型</h1>
+<pre><code>val list1 = List(1, 2, 3)
+val list2 = List(“a”, 2, true)
+var list1: List[Int] = new ArrayList[Int]
+var list2 = new ArrayList
+val personList = List((“Alice”,1), (“Bob”,2), (“Carol”,3))
+import collection.mutable # 可变
+val mlist = mutable.ArrayBuffer(“a”, “b”, “c”)</code></pre>
+<h1 id="set"><a name="user-content-set" href="file:///C:/users/admini~1/appdata/local/temp/18.html#set" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>set操作</h1>
+<pre><code>val set1 = Set(1, 2, 3)
+val set2 = Set(“a”, 2, true)
+import collection.mutable # 可变
+val mset = mutable.HashSet(“a”, “b”, “c”)</code></pre>
+<h1 id="map"><a name="user-content-map" href="file:///C:/users/admini~1/appdata/local/temp/18.html#map" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>map操作</h1>
+<pre><code>val map1 = Map(“one” -&gt; 1, “two” -&gt; 2, “three” -&gt; 3)
+val map2 = Map(1 -&gt; “one”, “2” -&gt; 2.0, 3.0 -&gt; false)
+import collection.mutable # 可变
+val mmap = mutable.HashMap(“a” -&gt; 1, “b” -&gt; 2 , “c” -&gt; 3)</code></pre>
+<h1 id="setmap"><a name="user-content-setmap" href="file:///C:/users/admini~1/appdata/local/temp/18.html#setmap" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>泛型/set/map操作</h1>
+<pre><code>list ++ list, list ::: list
+num :: list, num +: list, list:+ num
+list - num, list – list, list -= num
+list diff list, find</code></pre>
+<h1 id="_12"><a name="user-content-_12" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_12" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>类定义</h1>
+<pre><code>class hello() {
+
+}
+</code></pre>
+<h1 id="_13"><a name="user-content-_13" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_13" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>类默认构造</h1>
+<pre><code>class hello(val msg : String) {
+
+}
+</code></pre>
+<h1 id="_14"><a name="user-content-_14" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_14" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>类副构造</h1>
+<pre><code>class hello(val msg: String) {
+    private var num_ : Int = 0
+    private var name_ : String = _
+
+    def this(msg: String, num: Int) {
+        this(msg)
+        num_ = num
+    }
+
+    def this(msg: String, num: Int, name: String) {
+        this(msg)
+        num_ = num
+        name_ = name
+    }
+
+    override def toString() : String = {
+        name + msg + num
+    }
+}
+</code></pre>
+<h1 id="_15"><a name="user-content-_15" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_15" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>类的调用</h1>
+<pre><code>val h1 = new hello(“msg”)
+val h2 = new hello(“msg”,1)</code></pre>
+<h1 id="_16"><a name="user-content-_16" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_16" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>类的继承</h1>
+<pre><code>class sayhello(override val msg: String, var say: Nothing) extends hello(msg) {
+    # 只有在主构造函数才能往基类构造中传参数
+}
+</code></pre>
+<h1 id="_17"><a name="user-content-_17" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_17" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>单例对象</h1>
+<pre><code>object hello {
+    # 无法进行实例化所以没有构造函数
+}
+</code></pre>
+<h1 id="_18"><a name="user-content-_18" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_18" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>伴生对象</h1>
+<pre><code>class hello private() {}
+object hello {
+    # 可访问object达到访问class hello的目的
+}
+</code></pre>
+<h1 id="_19"><a name="user-content-_19" href="file:///C:/users/admini~1/appdata/local/temp/18.html#_19" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>静态对象</h1>
+<pre><code>class hello private(val msg: String) {
+    override def toString(): String = “msg ” + msg 
+}
+object hello {
+    def sayhello = “静态对象”
+    def apply(msg: String): hello = { new hello(msg) }
+}
+println(hello.sayhello)
+println(hello(“msggg”))</code></pre></article></body></html>
