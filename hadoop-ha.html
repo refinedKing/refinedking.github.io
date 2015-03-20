@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)file:///C:/users/admini~1/appdata/local/temp/15.html -->
+<html><head>
+<link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+<link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+<link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+<link rel="stylesheet" type="text/css" href="stylesheets/makedown.css" media="print">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style>
+
+body {
+  width: 60em;
+  border: 1px solid #ddd;
+  outline: 1300px solid #fff;
+  margin: 16px auto;
+}
+
+body .markdown-body
+{
+  padding: 30px;
+}
+
+</style>
+<title>CDH hadoop ha</title></head>
+<header>
+  <iframe src="header.html" height="100%" width="100%" frameBorder=0 marginwidth=0 marginheight=0 scrolling="no" ALLOWTRANSPARENCY="true"></iframe>
+</header>
+<body><article class="markdown-body"><h1 id="_1"><a name="user-content-_1" href="file:///C:/users/admini~1/appdata/local/temp/15.html#_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>准备机器：</h1>
+<pre><code>172.16.31.155  vpn2
+172.16.31.159  vpn4
+172.16.31.158  vpn3
+172.16.31.166  docker
+</code></pre>
+<h1 id="1ipip"><a name="user-content-1ipip" href="file:///C:/users/admini~1/appdata/local/temp/15.html#1ipip" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>1、查看ip地址是否为静态ip，如果不是进行配置</h1>
+<pre><code>vim /etc/sysconfig/network-scripts/ifcfg-eth0
+    DEVICE=eth0
+    TYPE=Ethernet
+    ONBOOT=yes
+    NM_CONTROLLED=yes
+    BOOTPROTO=none
+    IPADDR=172.16.31.155
+    NETMASK=255.255.255.0
+    GATEWAY=172.16.31.1
+    IPV6INIT=no
+    USERCTL=no
+</code></pre>
+<h1 id="2hostname"><a name="user-content-2hostname" href="file:///C:/users/admini~1/appdata/local/temp/15.html#2hostname" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>2、修改hostname</h1>
+<pre><code>A、vi /etc/sysconfig/network
+NETWORKING=yes
+HOSTNAME=172.16.31.159
+
+3台服务器对应的hostname分别修改成如下关系：
+
+172.16.31.155  vpn2
+172.16.31.159  vpn4
+172.16.31.158  vpn3
+172.16.31.166  docker
+
+B、4台服务器分别执行service network restart
+C、4台服务器分别执行hostname查看名字是否修改成功
+D、4台服务器分别执行 vim /etc/hosts 增加如下配置信息
+
+    172.16.31.155  vpn2
+    172.16.31.159  vpn4
+    172.16.31.158  vpn3
+    172.16.31.166  docker
+
+说明：如果想要在命令提示符里面看到生效的hostname，直接exit退出系统，然后重新进入就行了。
+</code></pre>
+<h1 id="3jdk"><a name="user-content-3jdk" href="file:///C:/users/admini~1/appdata/local/temp/15.html#3jdk" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>3、安装JDK</h1>
+<pre><code>略
+</code></pre>
+<h1 id="4httpwwwclouderacomcontentcloudera-contentcloudera-docscdh4latestcdh4-installation-guidecdh4ig_topic_4_4html"><a name="user-content-4httpwwwclouderacomcontentcloudera-contentcloudera-docscdh4latestcdh4-installation-guidecdh4ig_topic_4_4html" href="file:///C:/users/admini~1/appdata/local/temp/15.html#4httpwwwclouderacomcontentcloudera-contentcloudera-docscdh4latestcdh4-installation-guidecdh4ig_topic_4_4html" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>4、进入http://<a href="http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH4/latest/CDH4-Installation-Guide/cdh4ig_topic_4_4.html">www.cloudera.com/content/cloudera-content/cloudera-docs/CDH4/latest/CDH4-Installation-Guide/cdh4ig_topic_4_4.html</a>安装页面按照步骤进行</h1>
+<pre><code>A、cat /etc/issue 查看直接操作系统类型选择下载包
+        CentOS release 6.5 (Final)
+        Kernel \r on an \m
+B、cd /opt
+  mkdir soft
+  cd soft
+  wget http://archive.cloudera.com/cdh4/one-click-install/redhat/6/x86_64/cloudera-cdh-4-0.x86_64.rpm
+C、sudo yum --nogpgcheck localinstall cloudera-cdh-4-0.x86_64.rpm
+D、Creating a Local Yum Repository：
+        wget http://archive.cloudera.com/cdh4/redhat/6/x86_64/cdh/cloudera-cdh4.repo
+        cp cloudera-cdh4.repo /etc/yum.repos.d/
+        yum update &amp;&amp; yum install hadoop
+</code></pre>
+<h1 id="5namenodevpn4"><a name="user-content-5namenodevpn4" href="file:///C:/users/admini~1/appdata/local/temp/15.html#5namenodevpn4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>5、安装namenode在vpn4上</h1>
+<pre><code>sudo yum clean all; sudo yum install hadoop-hdfs-namenode
+</code></pre>
+<h1 id="6datanode-vpn4vpn3vpn2docker"><a name="user-content-6datanode-vpn4vpn3vpn2docker" href="file:///C:/users/admini~1/appdata/local/temp/15.html#6datanode-vpn4vpn3vpn2docker" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>6、安装datanode 在vpn4/vpn3/vpn2/docker上</h1>
+<pre><code>sudo yum clean all; sudo yum install hadoop-hdfs-datanode
+</code></pre>
+<h1 id="7vpn4vpn3vpn2docker"><a name="user-content-7vpn4vpn3vpn2docker" href="file:///C:/users/admini~1/appdata/local/temp/15.html#7vpn4vpn3vpn2docker" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>7、在vpn4/vpn3/vpn2/docker上安装</h1>
+<pre><code>sudo yum clean all; sudo yum install hadoop-client
+</code></pre>
+<h1 id="8hdfs"><a name="user-content-8hdfs" href="file:///C:/users/admini~1/appdata/local/temp/15.html#8hdfs" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>8、配置HDFS</h1>
+<pre><code>参考:http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH4/latest/CDH4-Installation-Guide/cdh4ig_topic_11_2.html
+sudo cp -r /etc/hadoop/conf.dist /etc/hadoop/conf.my_cluster
+sudo alternatives --verbose --install /etc/hadoop/conf hadoop-conf /etc/hadoop/conf.my_cluster 50
+sudo alternatives --set hadoop-conf /etc/hadoop/conf.my_cluster
+cd /etc/hadoop/conf.my_cluster
+
+# 所有HDFS节点  vim core-site.xml
+&lt;property&gt;
+    &lt;name&gt;fs.defaultFS&lt;/name&gt;
+    &lt;value&gt;hdfs://172.16.31.159:9000&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;fs.trash.interval&lt;/name&gt;
+    &lt;value&gt;360&lt;/value&gt;
+&lt;/property&gt;
+
+# 所有HDFS节点  vim hdfs-site.xml
+&lt;property&gt;
+      &lt;name&gt;dfs.replication&lt;/name&gt;
+      &lt;value&gt;1&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.namenode.name.dir&lt;/name&gt;
+    &lt;value&gt;/data01/namenode&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.datanode.data.dir&lt;/name&gt;
+    &lt;value&gt;/data01/datanode&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.permissions.superusergroup&lt;/name&gt;
+    &lt;value&gt;hadoop&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.namenode.http-address&lt;/name&gt;
+    &lt;value&gt;172.16.31.159:50070&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.namenode.checkpoint.dir&lt;/name&gt;
+    &lt;value&gt;/data01/check&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.namenode.checkpoint.edits.dir&lt;/name&gt;
+    &lt;value&gt;/data01/check&lt;/value&gt;
+&lt;/property&gt;
+&lt;property&gt;
+    &lt;name&gt;dfs.webhdfs.enabled&lt;/name&gt;
+    &lt;value&gt;true&lt;/value&gt;
+&lt;/property&gt;
+</code></pre>
+<h1 id="9"><a name="user-content-9" href="file:///C:/users/admini~1/appdata/local/temp/15.html#9" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>9、文件分配权限：</h1>
+<pre><code>mkdir -p /data01/check /data01/namenode /data01/datanode
+sudo chown -R hdfs:hdfs /data01/check /data01/namenode /data01/datanode
+sudo chmod 700 /data01/namenode
+</code></pre>
+<h1 id="10namenode"><a name="user-content-10namenode" href="file:///C:/users/admini~1/appdata/local/temp/15.html#10namenode" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>10、namenode格式化</h1>
+<pre><code>sudo -u hdfs hadoop namenode -format (必要sudo)
+</code></pre>
+<h1 id="11namenode"><a name="user-content-11namenode" href="file:///C:/users/admini~1/appdata/local/temp/15.html#11namenode" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>11、启动服务namenode</h1>
+<pre><code>/etc/init.d/hadoop-hdfs-namenode start  （tail -f -n1000 /var/log/hadoop-hdfs/hadoop-hdfs-namenode-172.16.31.159.log  查看日志）
+</code></pre>
+<h1 id="12datanode"><a name="user-content-12datanode" href="file:///C:/users/admini~1/appdata/local/temp/15.html#12datanode" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>12、启动DataNode</h1>
+<pre><code>/etc/init.d/hadoop-hdfs-datanode start (tail -f -n10000 /var/log/hadoop-hdfs/hadoop-hdfs-datanode-172.16.31.159.out 查看日志)
+</code></pre>
+<h1 id="13hdfs"><a name="user-content-13hdfs" href="file:///C:/users/admini~1/appdata/local/temp/15.html#13hdfs" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>13、HDFS验证</h1>
+<pre><code>su - hdfs -c "hadoop fs -ls -R /"
+sudo -u hdfs hadoop fs -mkdir /tmp
+sudo -u hdfs hadoop fs -ls -R /
+sudo -u hdfs hadoop fs -mkdir /tmp/mapred/system
+sudo -u hdfs hadoop fs -chown mapred:hadoop /tmp/mapred/system
+sudo -u hdfs hadoop fs -mkdir -p /user/root
+sudo -u hdfs hadoop fs -mkdir -p /user/hdfs
+</code></pre>
+<h1 id="14-ha-hdfs"><a name="user-content-14-ha-hdfs" href="file:///C:/users/admini~1/appdata/local/temp/15.html#14-ha-hdfs" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>14, ha hdfs配置</h1>
+<pre><code>按需要在以下节点安装功能
+zookeeper, hadoop-hdfs-namenode, hadoop-hdfs-datanode
+hadoop-hdfs-zkfc, hadoop-hdfs-journalnode
+        zk    nn    dn    zkfc    jn
+vpn2    Y           Y             Y
+vpn3    Y     Y     Y     Y       Y
+vpn4    Y     Y     Y     Y       Y
+</code></pre>
+<h1 id="14-zookeeper"><a name="user-content-14-zookeeper" href="file:///C:/users/admini~1/appdata/local/temp/15.html#14-zookeeper" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>14. 安装zookeeper</h1>
+<pre><code>增加配置: 
+server.1= vpn2:2888:3888
+server.2= vpn3:2888:3888
+server.3= vpn4:2888:3888
+</code></pre>
+<h1 id="15-core-sitexml"><a name="user-content-15-core-sitexml" href="file:///C:/users/admini~1/appdata/local/temp/15.html#15-core-sitexml" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>15. core-site.xml 配置</h1>
+<pre><code>&lt;configuration&gt;
+    &lt;property&gt;
+        &lt;name&gt;fs.defaultFS&lt;/name&gt;
+        &lt;value&gt;hdfs://cluster1&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;hadoop.tmp.dir&lt;/name&gt;
+        &lt;value&gt;/tmp&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;fs.trash.interval&lt;/name&gt;
+        &lt;value&gt;360&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;io.file.buffer.size&lt;/name&gt;
+        &lt;value&gt;131072&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;!-- &lt;property&gt;
+        &lt;name&gt;hadoop.proxyuser.hduser.hosts&lt;/name&gt;
+        &lt;value&gt;*&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;hadoop.proxyuser.hduser.groups&lt;/name&gt;
+        &lt;value&gt;*&lt;/value&gt;
+    &lt;/property&gt; --&gt;
+    &lt;property&gt;
+        &lt;name&gt;ha.zookeeper.quorum&lt;/name&gt;
+        &lt;value&gt;vpn2:2181,vpn3:2181,vpn4:2181&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;
+
+hdfs-site.xml 配置
+&lt;configuration&gt;
+    &lt;property&gt;
+        &lt;name&gt;dfs.nameservices&lt;/name&gt;
+        &lt;value&gt;cluster1&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.ha.namenodes.cluster1&lt;/name&gt;
+        &lt;value&gt;vpn4,vpn3&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.namenode.rpc-address.cluster1.vpn4&lt;/name&gt;
+        &lt;value&gt;vpn4:9000&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;dfs.namenode.rpc-address.cluster1.vpn3&lt;/name&gt;
+        &lt;value&gt;vpn3:9000&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.namenode.http-address.cluster1.vpn4&lt;/name&gt;
+        &lt;value&gt;vpn4:50070&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.namenode.http-address.cluster1.vpn3&lt;/name&gt;
+        &lt;value&gt;vpn3:50070&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.namenode.shared.edits.dir&lt;/name&gt;
+        &lt;value&gt;qjournal://vpn2:8485;vpn3:8485;vpn4:8485/cluster1&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.ha.automatic-failover.enabled&lt;/name&gt;
+        &lt;value&gt;true&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.journalnode.edits.dir&lt;/name&gt;
+        &lt;value&gt;/tmp/journal&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.client.failover.proxy.provider.cluster1&lt;/name&gt;
+        &lt;value&gt;org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.ha.fencing.methods&lt;/name&gt;
+        &lt;value&gt;sshfence&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.ha.fencing.ssh.private-key-files&lt;/name&gt;
+        &lt;value&gt;/home/hadoop/.ssh/id_rsa&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+          &lt;name&gt;dfs.replication&lt;/name&gt;
+          &lt;value&gt;1&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.namenode.name.dir&lt;/name&gt;
+        &lt;value&gt;/data01/namenode&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.datanode.data.dir&lt;/name&gt;
+        &lt;value&gt;/data01/datanode&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.webhdfs.enabled&lt;/name&gt;
+        &lt;value&gt;true&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.journalnode.http-address&lt;/name&gt;
+        &lt;value&gt;0.0.0.0:8480&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;dfs.journalnode.rpc-address&lt;/name&gt;
+        &lt;value&gt;0.0.0.0:8485&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;
+
+yarn.xml 配置(在需要mapreduce功能时需要配置)
+&lt;configuration&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.connect.retry-interval.ms&lt;/name&gt;
+        &lt;value&gt;2000&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.ha.enabled&lt;/name&gt;
+        &lt;value&gt;true&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.ha.rm-ids&lt;/name&gt;
+        &lt;value&gt;rm1,rm2&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;ha.zookeeper.quorum&lt;/name&gt;
+        &lt;value&gt;vpn2:2181,vpn3:2181,vpn4:2181&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.ha.automatic-failover.enabled&lt;/name&gt;
+        &lt;value&gt;true&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.hostname.rm1&lt;/name&gt;
+        &lt;value&gt;vpn4&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.hostname.rm2&lt;/name&gt;
+        &lt;value&gt;vpn3&lt;/value&gt;
+    &lt;/property&gt;
+
+    &lt;!--在namenode1上配置rm1,在namenode2上配置rm2,注意：一般都喜欢把配置好的文件远程复制到其它机器上，但这个在YARN的另一个机器上一定要修改 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.ha.id&lt;/name&gt;
+        &lt;value&gt;rm1&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!--开启自动恢复功能 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.recovery.enabled&lt;/name&gt;
+        &lt;value&gt;true&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!--配置与zookeeper的连接地址 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.zk-state-store.address&lt;/name&gt;
+        &lt;value&gt;vpn2:2181,vpn3:2181,vpn4:2181&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.store.class&lt;/name&gt;
+        &lt;value&gt;org.apache.hadoop.yarn.server.resourcemanager.recovery.ZKRMStateStore&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.zk-address&lt;/name&gt;
+        &lt;value&gt;vpn2:2181,vpn3:2181,vpn4:2181&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.cluster-id&lt;/name&gt;
+        &lt;value&gt;cluster1-yarn&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!--schelduler失联等待连接时间 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.app.mapreduce.am.scheduler.connection.wait.interval-ms&lt;/name&gt;
+        &lt;value&gt;5000&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!--配置rm1 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.address.rm1&lt;/name&gt;
+        &lt;value&gt;vpn4:8132&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.scheduler.address.rm1&lt;/name&gt;
+        &lt;value&gt;vpn4:8130&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.webapp.address.rm1&lt;/name&gt;
+        &lt;value&gt;vpn4:8188&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.resource-tracker.address.rm1&lt;/name&gt;
+        &lt;value&gt;vpn4:8131&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.admin.address.rm1&lt;/name&gt;
+        &lt;value&gt;vpn4:8033&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.ha.admin.address.rm1&lt;/name&gt;
+        &lt;value&gt;vpn4:23142&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!--配置rm2 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.address.rm2&lt;/name&gt;
+        &lt;value&gt;vpn3:8132&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.scheduler.address.rm2&lt;/name&gt;
+        &lt;value&gt;vpn3:8130&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.webapp.address.rm2&lt;/name&gt;
+        &lt;value&gt;vpn3:8188&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.resource-tracker.address.rm2&lt;/name&gt;
+        &lt;value&gt;vpn3:8131&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.admin.address.rm2&lt;/name&gt;
+        &lt;value&gt;vpn3:8033&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.ha.admin.address.rm2&lt;/name&gt;
+        &lt;value&gt;vpn3:23142&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;
+        &lt;value&gt;mapreduce_shuffle&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.nodemanager.aux-services.mapreduce.shuffle.class&lt;/name&gt;
+        &lt;value&gt;org.apache.hadoop.mapred.ShuffleHandler&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.nodemanager.local-dirs&lt;/name&gt;
+        &lt;value&gt;/data01/yarn&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.nodemanager.log-dirs&lt;/name&gt;
+        &lt;value&gt;/var/log/hadoop-yarn/containers&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.nodemanager.remote-app-log-dir&lt;/name&gt;
+        &lt;value&gt;/var/log/hadoop-yarn/apps&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;mapreduce.shuffle.port&lt;/name&gt;
+        &lt;value&gt;23080&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;!--故障处理类 --&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.client.failover-proxy-provider&lt;/name&gt;
+        &lt;value&gt;org.apache.hadoop.yarn.client.ConfiguredRMFailoverProxyProvider&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property&gt;
+        &lt;name&gt;yarn.resourcemanager.ha.automatic-failover.zk-base-path&lt;/name&gt;
+        &lt;value&gt;/yarn-leader-election&lt;/value&gt;
+    &lt;/property&gt;
+&lt;/configuration&gt;
+</code></pre>
+<h1 id="16"><a name="user-content-16" href="file:///C:/users/admini~1/appdata/local/temp/15.html#16" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>16. 安装配置</h1>
+<pre><code># 非HA集群转成HA集群时需要
+hdfs namenode -initializeSharedEdits
+# 建立目录
+cd /data01 &amp;&amp; rm -rf /tmp/journal /data01/datanode /data01/namenode
+mkdir /tmp/journal /data01/datanode /data01/namenode
+sudo chown -R hdfs:hdfs /tmp/journal /data01/datanode /data01/namenode
+# 所有zk节点
+sudo zookeeper-server start
+# zk任意节点
+hdfs zkfc -formatZK
+# 主备nn节点启动
+sudo service hadoop-hdfs-zkfc start
+# jn节点启动
+sudo service hadoop-hdfs-journalnode start
+# 仅一个NN节点格式化
+hdfs namenode -format cluster1
+sudo chown -R hdfs:hdfs /tmp/journal /data01/datanode /data01/namenode
+# 哪一个NN格式化就在哪一个上启动
+sudo service hadoop-hdfs-namenode start
+# 在备NN上同步主NN的元数据信息(备用先不启动)
+hdfs namenode -bootstrapStandby
+sudo service hadoop-hdfs-datanode start
+</code></pre>
+<h1 id="_2"><a name="user-content-_2" href="file:///C:/users/admini~1/appdata/local/temp/15.html#_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>停止清理</h1>
+<h2 id="vpn2"><a name="user-content-vpn2" href="file:///C:/users/admini~1/appdata/local/temp/15.html#vpn2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>vpn2</h2>
+<pre><code>service hadoop-hdfs-datanode stop &amp;&amp; service hadoop-hdfs-journalnode stop &amp;&amp; zookeeper-server stop &amp;&amp; cd /data01 &amp;&amp; rm -rf /tmp/journal /data01/datanode /data01/namenode &amp;&amp; rm -rf /var/log/hadoop-hdfs/*
+</code></pre>
+<h2 id="vpn3vpn4"><a name="user-content-vpn3vpn4" href="file:///C:/users/admini~1/appdata/local/temp/15.html#vpn3vpn4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>vpn3,vpn4</h2>
+<pre><code>service hadoop-hdfs-datanode stop &amp;&amp; service hadoop-hdfs-namenode stop &amp;&amp; service hadoop-hdfs-journalnode stop &amp;&amp; service hadoop-hdfs-zkfc stop &amp;&amp; zookeeper-server stop &amp;&amp; cd /data01 &amp;&amp; rm -rf /tmp/journal /data01/datanode /data01/namenode &amp;&amp; rm -rf /var/log/hadoop-hdfs/*
+</code></pre></article></body></html>
